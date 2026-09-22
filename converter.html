@@ -723,7 +723,9 @@
           if (bgModeColor.checked) await applyBgColor(); else showTransparentPreview();
           bgPreview.style.display = 'block';
         } catch (error) {
-          bgStatus.textContent = `Background removal failed: ${error.message}`;
+          bgStatus.textContent = error.message === 'Failed to fetch'
+            ? 'Could not download the AI model. If you opened this file directly (address bar starts with file://), that often blocks the download — serve it over http:// (e.g. a local server) or host it online, then try again. Otherwise, check your internet connection.'
+            : `Background removal failed: ${error.message}`;
         } finally {
           removeBgBtn.disabled = false;
         }
