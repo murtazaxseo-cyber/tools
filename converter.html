@@ -12,12 +12,17 @@
     h1 { margin:0; font-size:clamp(2rem,5vw,3.5rem); letter-spacing:-.055em; }
     .intro { max-width:700px; color:var(--muted); font-size:1.05rem; line-height:1.6; }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin-top:30px; }
-    .card { padding:24px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,rgba(19,43,70,.92),rgba(9,21,38,.92)); box-shadow:0 0 42px rgba(76,228,255,.06); }
+    .card { position:relative; isolation:isolate; padding:24px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(145deg,rgba(19,43,70,.92),rgba(9,21,38,.92)); box-shadow:0 0 42px rgba(76,228,255,.06); }
+    .card-snake { position:absolute; inset:0; width:100%; height:100%; z-index:2; overflow:visible; pointer-events:none; }
+    .card-snake rect { fill:none; stroke:url(#rgbSnakeGradient); }
+    .card-snake .snake-glow { stroke-width:5; opacity:.35; filter:blur(5px); }
+    .card-snake .snake-core { stroke-width:1.5; opacity:.75; }
     .text-card { grid-column:1 / -1; }
     .text-panels { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:start; }
     .compressor-card { grid-column:1 / -1; }
     .compressor-panels { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:start; }
     .format-card { grid-column:1 / -1; }
+    .resize-card { grid-column:1 / -1; }
     .format-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
     h2 { margin:0 0 8px; font-size:1.25rem; }
     .description { margin:0 0 16px; color:#bdd3e4; line-height:1.55; }
@@ -41,6 +46,8 @@
     .size-row { display:flex; align-items:center; gap:8px; }
     .size-row input, .size-row select { height:43px; padding:0 12px; color:var(--text); border:1px solid #335675; border-radius:10px; background:#071422; font:15px ui-monospace,SFMono-Regular,Consolas,monospace; }
     .size-row input { min-width:0; flex:1; }
+    .lock-label { display:flex; align-items:center; gap:8px; margin:14px 0 0; color:#bdd3e4; font-size:.9rem; font-weight:400; letter-spacing:normal; text-transform:none; }
+    .lock-label input { width:auto; }
     .format-controls select { width:100%; height:48px; padding:0 12px; color:var(--text); border:1px solid #335675; border-radius:12px; background:#071422; font:15px ui-monospace,SFMono-Regular,Consolas,monospace; }
     .file-info { min-height:160px; display:flex; align-items:center; justify-content:center; gap:14px; padding:14px; border:1px solid #335675; border-radius:12px; color:var(--muted); background:#071422; text-align:center; line-height:1.55; }
     .preview { display:none; width:110px; height:110px; flex:0 0 110px; border-radius:10px; object-fit:cover; border:1px solid #41627e; }
@@ -145,11 +152,107 @@
         <div id="batchResults" class="results"></div>
         <p id="batchStatus" class="status" aria-live="polite">Choose images to begin.</p>
       </section>
+      <section class="card resize-card">
+        <h2>Image Resizer</h2>
+        <p class="description">Resize an image to exact pixel dimensions, then preview and download the result.</p>
+        <p class="hint">Your image stays on this device. Choose it, set the new width and height, then download the resized image.</p>
+        <div class="compressor-panels">
+          <div>
+            <label for="resizeFile">1. Upload image</label>
+            <div class="upload-box"><input id="resizeFile" type="file" accept="image/*"></div>
+            <label for="resizeWidth">2. New dimensions (px)</label>
+            <div class="size-row">
+              <input id="resizeWidth" type="number" min="1" step="1" placeholder="Width">
+              <input id="resizeHeight" type="number" min="1" step="1" placeholder="Height">
+            </div>
+            <label class="lock-label" for="lockAspect"><input id="lockAspect" type="checkbox" checked> Lock aspect ratio</label>
+            <div class="row"><button id="resizeImage" type="button">Resize image</button><button class="secondary" id="clearResize" type="button">Clear</button></div>
+          </div>
+          <div>
+            <label>3. Download result</label>
+            <div id="resizeInfo" class="file-info"><img id="resizePreview" class="preview" alt="Resized image preview"><span id="resizeInfoText">Choose an image to begin.</span></div>
+            <div class="row"><button id="downloadResize" type="button" disabled>Download resized image</button></div>
+          </div>
+        </div>
+        <p id="resizeStatus" class="status" aria-live="polite"></p>
+      </section>
     </div>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function setupCardSnakes() {
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const defsSvg = document.createElementNS(svgNS, 'svg');
+      defsSvg.setAttribute('width', '0');
+      defsSvg.setAttribute('height', '0');
+      defsSvg.style.position = 'absolute';
+      const defs = document.createElementNS(svgNS, 'defs');
+      const gradient = document.createElementNS(svgNS, 'linearGradient');
+      gradient.setAttribute('id', 'rgbSnakeGradient');
+      gradient.setAttribute('x1', '0%'); gradient.setAttribute('y1', '0%');
+      gradient.setAttribute('x2', '100%'); gradient.setAttribute('y2', '0%');
+      [['0%', '#1e1b4b'], ['25%', '#4338ca'], ['50%', '#7c3aed'], ['75%', '#312e81'], ['100%', '#1e1b4b']].forEach(([offset, color]) => {
+        const stop = document.createElementNS(svgNS, 'stop');
+        stop.setAttribute('offset', offset);
+        stop.setAttribute('stop-color', color);
+        gradient.appendChild(stop);
+      });
+      defs.appendChild(gradient);
+      defsSvg.appendChild(defs);
+      document.body.appendChild(defsSvg);
+
+      function radiusOf(card) { return parseFloat(getComputedStyle(card).borderRadius) || 20; }
+      function makeRect(className, radius) {
+        const rect = document.createElementNS(svgNS, 'rect');
+        rect.setAttribute('class', className);
+        rect.setAttribute('x', '0');
+        rect.setAttribute('y', '0');
+        rect.setAttribute('width', '100%');
+        rect.setAttribute('height', '100%');
+        rect.setAttribute('rx', radius);
+        rect.setAttribute('ry', radius);
+        return rect;
+      }
+      const cardRects = [];
+      document.querySelectorAll('.card').forEach(card => {
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('class', 'card-snake');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        const radius = radiusOf(card);
+        const glow = makeRect('snake-glow', radius);
+        const core = makeRect('snake-core', radius);
+        svg.append(glow, core);
+        card.appendChild(svg);
+        cardRects.push({ card, glow, core });
+      });
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          cardRects.forEach(({ card, glow, core }) => {
+            const radius = radiusOf(card);
+            glow.setAttribute('rx', radius); glow.setAttribute('ry', radius);
+            core.setAttribute('rx', radius); core.setAttribute('ry', radius);
+          });
+        }, 150);
+      });
+
+      // Continuously rotate the shared gradient (in the gradient's own 0-1 bounding-box
+      // space, so it works for every card regardless of its pixel size) for a cycling neon color sweep.
+      const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!prefersReducedMotion) {
+        const durationMs = 7000;
+        function tick(timestamp) {
+          const angle = ((timestamp % durationMs) / durationMs) * 360;
+          gradient.setAttribute('gradientTransform', `rotate(${angle} 0.5 0.5)`);
+          requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+    })();
+  </script>
   <script>
     (() => {
       const richInput = document.getElementById('richInput');
@@ -365,6 +468,110 @@
         downloadImage.disabled = true;
         compressInfoText.textContent = 'Choose an image to begin.';
         compressStatus.textContent = '';
+      });
+
+      const resizeFile = document.getElementById('resizeFile');
+      const resizeWidth = document.getElementById('resizeWidth');
+      const resizeHeight = document.getElementById('resizeHeight');
+      const lockAspect = document.getElementById('lockAspect');
+      const resizeInfoText = document.getElementById('resizeInfoText');
+      const resizePreview = document.getElementById('resizePreview');
+      const resizeStatus = document.getElementById('resizeStatus');
+      const downloadResize = document.getElementById('downloadResize');
+      let resizeOriginalFile = null;
+      let resizeOriginalDims = null;
+      let resizedBlob = null;
+      let resizePreviewUrl = null;
+
+      resizeFile.addEventListener('change', () => {
+        resizeOriginalFile = resizeFile.files[0] || null;
+        resizedBlob = null;
+        resizeOriginalDims = null;
+        downloadResize.disabled = true;
+        resizeStatus.textContent = '';
+        resizeWidth.value = '';
+        resizeHeight.value = '';
+        if (resizePreviewUrl) { URL.revokeObjectURL(resizePreviewUrl); resizePreviewUrl = null; }
+        resizePreview.style.display = 'none';
+        if (!resizeOriginalFile) { resizeInfoText.textContent = 'Choose an image to begin.'; return; }
+        if (!resizeOriginalFile.type.startsWith('image/')) { resizeInfoText.textContent = 'Please choose an image file.'; return; }
+        resizeInfoText.textContent = 'Reading image…';
+        const reader = new FileReader();
+        reader.onerror = () => { resizeInfoText.textContent = 'The image could not be read.'; };
+        reader.onload = () => {
+          const image = new Image();
+          image.onerror = () => { resizeInfoText.textContent = 'The image could not be read.'; };
+          image.onload = () => {
+            resizeOriginalDims = { width: image.naturalWidth, height: image.naturalHeight };
+            resizeWidth.value = image.naturalWidth;
+            resizeHeight.value = image.naturalHeight;
+            resizeInfoText.textContent = `${resizeOriginalFile.name}\nOriginal size: ${formatSize(resizeOriginalFile.size)}\nDimensions: ${image.naturalWidth} × ${image.naturalHeight}px`;
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(resizeOriginalFile);
+      });
+      resizeWidth.addEventListener('input', () => {
+        if (!lockAspect.checked || !resizeOriginalDims) return;
+        const width = Number(resizeWidth.value);
+        if (width > 0) resizeHeight.value = Math.max(1, Math.round((width * resizeOriginalDims.height) / resizeOriginalDims.width));
+      });
+      resizeHeight.addEventListener('input', () => {
+        if (!lockAspect.checked || !resizeOriginalDims) return;
+        const height = Number(resizeHeight.value);
+        if (height > 0) resizeWidth.value = Math.max(1, Math.round((height * resizeOriginalDims.width) / resizeOriginalDims.height));
+      });
+      document.getElementById('resizeImage').addEventListener('click', () => {
+        if (!resizeOriginalFile) { resizeStatus.textContent = 'Choose an image first.'; return; }
+        if (!resizeOriginalFile.type.startsWith('image/')) { resizeStatus.textContent = 'Please choose an image file.'; return; }
+        const width = Math.round(Number(resizeWidth.value));
+        const height = Math.round(Number(resizeHeight.value));
+        if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) { resizeStatus.textContent = 'Enter a valid width and height.'; return; }
+        const reader = new FileReader();
+        reader.onerror = () => { resizeStatus.textContent = 'The image could not be read.'; };
+        reader.onload = () => {
+          const image = new Image();
+          image.onerror = () => { resizeStatus.textContent = 'The image could not be processed.'; };
+          image.onload = async () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+            const outputType = ['image/jpeg', 'image/webp', 'image/png'].includes(resizeOriginalFile.type) ? resizeOriginalFile.type : 'image/png';
+            const blob = await blobFromCanvas(canvas, outputType);
+            if (!blob) { resizeStatus.textContent = 'Resizing failed. Please try another image.'; return; }
+            resizedBlob = blob;
+            downloadResize.disabled = false;
+            if (resizePreviewUrl) URL.revokeObjectURL(resizePreviewUrl);
+            resizePreviewUrl = URL.createObjectURL(blob);
+            resizePreview.src = resizePreviewUrl;
+            resizePreview.style.display = 'block';
+            resizeInfoText.textContent = `Ready to download\nNew size: ${formatSize(blob.size)}\nDimensions: ${width} × ${height}px`;
+            resizeStatus.textContent = 'Resized locally. Nothing was uploaded.';
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(resizeOriginalFile);
+      });
+      downloadResize.addEventListener('click', () => {
+        if (!resizedBlob || !resizeOriginalFile) return;
+        const base = fileBaseName(resizeOriginalFile.name);
+        const ext = resizedBlob.type === 'image/png' ? 'png' : resizedBlob.type === 'image/webp' ? 'webp' : 'jpg';
+        downloadBlob(resizedBlob, `${base}-resized.${ext}`);
+      });
+      document.getElementById('clearResize').addEventListener('click', () => {
+        resizeFile.value = '';
+        resizeOriginalFile = null;
+        resizedBlob = null;
+        resizeOriginalDims = null;
+        resizeWidth.value = '';
+        resizeHeight.value = '';
+        if (resizePreviewUrl) { URL.revokeObjectURL(resizePreviewUrl); resizePreviewUrl = null; }
+        resizePreview.removeAttribute('src');
+        resizePreview.style.display = 'none';
+        downloadResize.disabled = true;
+        resizeInfoText.textContent = 'Choose an image to begin.';
+        resizeStatus.textContent = '';
       });
 
       const extensionOf = name => (name.split('.').pop() || '').toLowerCase();
