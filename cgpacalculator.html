@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murtaza SEO — High School GPA Calculator</title>
+<style>
+  :root{
+    --accent:#ff7a18;
+    --accent-dark:#e76508;
+    --text:#233044;
+    --muted:#6f7d90;
+    --border:#dfe4ea;
+    --panel:#ffffff;
+    --bg:#fafafa;
+    --soft:#f5f7f9;
+    --green:#278a62;
+    --shadow:0 8px 25px rgba(35,48,68,.07);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color:var(--text);
+    background:var(--bg);
+  }
+  header{
+    background:#fff;
+    border-bottom:1px solid #e7eaee;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .nav{
+    max-width:1120px;
+    margin:auto;
+    min-height:68px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+  }
+  .brand{
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:-.4px;
+  }
+  .brand span{color:var(--accent)}
+  .tagline{
+    color:var(--muted);
+    font-size:13px;
+  }
+  main{
+    max-width:1120px;
+    margin:0 auto;
+    padding:42px 22px 70px;
+  }
+  .hero{text-align:center;margin-bottom:28px}
+  h1{
+    margin:0 0 9px;
+    font-size:32px;
+    letter-spacing:-1px;
+  }
+  .hero p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .updated{
+    margin-top:12px;
+    font-size:12px;
+    color:#8792a0;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns:minmax(0,1.8fr) minmax(280px,.8fr);
+    gap:14px;
+    align-items:start;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    box-shadow:var(--shadow);
+  }
+  .courses-card{padding:12px}
+  .year-head{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:9px;
+  }
+  select,input,button{
+    font:inherit;
+  }
+  select,input{
+    height:40px;
+    border:1px solid #d8dee6;
+    border-radius:6px;
+    background:#fff;
+    color:var(--text);
+    padding:0 11px;
+    outline:none;
+  }
+  select:focus,input:focus{border-color:#b9c2cd;box-shadow:0 0 0 3px rgba(255,122,24,.09)}
+  .year-select{width:200px}
+  .icon-btn{
+    margin-left:auto;
+    border:0;
+    background:transparent;
+    color:#8c96a2;
+    cursor:pointer;
+    font-size:21px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+  }
+  .icon-btn:hover{background:#f0f2f5;color:#4e5967}
+  .grid-head,.course-row{
+    display:grid;
+    grid-template-columns:1.25fr .55fr .6fr 1fr 30px;
+    gap:5px;
+    align-items:center;
+  }
+  .grid-head{
+    padding:0 8px 5px;
+    font-size:12px;
+    font-weight:700;
+    color:#465466;
+  }
+  .course-row{margin-bottom:5px}
+  .course-row input,.course-row select{width:100%}
+  .remove{
+    border:0;
+    background:transparent;
+    color:#8b949f;
+    cursor:pointer;
+    font-size:20px;
+  }
+  .remove:hover{color:#d55353}
+  .year-total{
+    display:flex;
+    gap:12px;
+    padding:5px 8px 7px;
+    font-size:12px;
+    color:#5f6c7b;
+  }
+  .year-total strong{color:#303d4d}
+  .btn{
+    border:1px solid var(--accent);
+    color:var(--accent-dark);
+    background:#fff;
+    border-radius:6px;
+    padding:8px 12px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+  }
+  .btn:hover{background:#fff7f0}
+  .add-year{
+    margin-top:10px;
+    padding:10px 8px;
+  }
+  .summary{
+    background:#e8e5e0;
+    border-radius:7px;
+    padding:12px 13px;
+    margin-bottom:10px;
+  }
+  .summary-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:700;
+  }
+  .summary hr{border:0;border-top:1px solid #c9c5bf;margin:10px 0}
+  .summary-line{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:#485465;
+    margin:7px 0;
+  }
+  .control-card{padding:12px}
+  .full{width:100%;margin-bottom:10px}
+  .seg{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border:1px solid #cfcfcf;
+    border-radius:22px;
+    overflow:hidden;
+    height:34px;
+    margin-bottom:9px;
+  }
+  .seg button{
+    border:0;background:#fff;color:#9b9b9b;cursor:pointer;font-size:12px;
+  }
+  .seg button.active{
+    background:#c9c7c3;color:#fff;font-weight:700;
+  }
+  .reset{width:100%;background:#fff;border-color:#d8d8d8;color:#5d6774}
+  .tip{
+    margin-top:10px;
+    padding:18px 12px;
+    background:#fff5e8;
+    border-radius:6px;
+    text-align:center;
+  }
+  .tip-icon{
+    width:62px;height:62px;border-radius:50%;
+    background:#ffd28f;margin:-38px auto 10px;
+    display:grid;place-items:center;font-size:31px;
+    border:5px solid #fff;
+  }
+  .tip h3{font-size:15px;margin:5px 0}
+  .tip p{font-size:12px;color:#687586;line-height:1.5;margin:7px 0 14px}
+  .tip a{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:12px;
+    padding:9px 20px;
+    border-radius:20px;
+  }
+  .notice{
+    margin-top:20px;
+    padding:12px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:#687586;
+    font-size:12px;
+    line-height:1.5;
+  }
+  footer{
+    background:#f2eee9;
+    padding:48px 22px;
+    color:#697585;
+  }
+  .footer-inner{max-width:1120px;margin:auto}
+  .footer-brand{font-weight:800;color:#273445}
+  .footer-brand span{color:var(--accent)}
+  .footer-links{display:flex;gap:18px;margin-top:16px;font-size:12px}
+  .footer-links a{color:#697585;text-decoration:none}
+  .footer-bottom{
+    border-top:1px solid #ded9d2;
+    margin-top:35px;padding-top:18px;font-size:11px;
+    display:flex;justify-content:space-between;
+  }
+  .empty{
+    text-align:center;padding:25px;color:#8994a1;font-size:13px;
+  }
+  @media(max-width:850px){
+    .layout{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){
+    main{padding:30px 12px}
+    h1{font-size:27px}
+    .grid-head{display:none}
+    .course-row{
+      grid-template-columns:1fr 1fr;
+      background:#fafbfc;
+      border:1px solid var(--border);
+      border-radius:7px;
+      padding:8px;
+      gap:7px;
+    }
+    .course-row input{grid-column:1/-1}
+    .course-row .remove{grid-column:2;grid-row:3;justify-self:end}
+    .year-select{width:calc(100% - 44px)}
+    .tagline{display:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand">Murtaza <span>SEO</span></div>
+    <div class="tagline">Free High School GPA Calculator</div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>High School GPA Calculator</h1>
+    <p>Your course information is saved automatically in this browser.</p>
+    <div class="updated">Built by Murtaza SEO</div>
+  </section>
+
+  <div class="layout">
+    <section>
+      <div id="years"></div>
+      <button class="btn add-year" id="addYear">＋ Add Year</button>
+      <div class="notice">
+        <strong>How it works:</strong> Add your courses, select each grade, enter credits, and choose the course type.
+        The calculator updates weighted and unweighted GPA automatically.
+      </div>
+    </section>
+
+    <aside>
+      <div class="card control-card">
+        <div class="summary">
+          <div class="summary-top">
+            <span>Cumulative GPA</span>
+            <span>Credits: <span id="totalCredits">0.00</span></span>
+          </div>
+          <hr>
+          <div class="summary-line"><span>Weighted</span><strong id="weightedGpa">0.00</strong></div>
+          <div class="summary-line"><span>Unweighted</span><strong id="unweightedGpa">0.00</strong></div>
+        </div>
+
+        <select id="gradingScale" class="full">
+          <option value="plusminus">4.0 Letter Grading with +/-</option>
+          <option value="standard">4.0 Letter Grading</option>
+        </select>
+
+        <div class="seg">
+          <button class="active" data-mode="letter">Letter</button>
+          <button data-mode="percentage">Percentage</button>
+        </div>
+
+        <button class="btn reset" id="reset">Reset</button>
+
+        <div class="tip">
+          <div class="tip-icon">🎓</div>
+          <h3>Murtaza SEO GPA Tool</h3>
+          <p>Quickly estimate your high school GPA across multiple years and courses.</p>
+          <a href="#" onclick="return false;">Murtaza SEO</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">Murtaza <span>SEO</span></div>
+    <div style="margin-top:8px;font-size:12px">Simple tools for students and website visitors.</div>
+    <div class="footer-links">
+      <a href="#" onclick="return false;">Home</a>
+      <a href="#" onclick="return false;">Tools</a>
+      <a href="#" onclick="return false;">GPA Calculator</a>
+      <a href="#" onclick="return false;">Contact</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="yearNow"></span> Murtaza SEO. All Rights Reserved.</span>
+      <span>★</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const STORAGE_KEY = "murtaza-seo-gpa-calculator-v1";
+const grades = {
+  "A+": 4.0, "A": 4.0, "A-": 3.7,
+  "B+": 3.3, "B": 3.0, "B-": 2.7,
+  "C+": 2.3, "C": 2.0, "C-": 1.7,
+  "D+": 1.3, "D": 1.0, "D-": 0.7,
+  "F": 0
+};
+const percentageGrades = [
+  ["97–100","A+"],["93–96","A"],["90–92","A-"],
+  ["87–89","B+"],["83–86","B"],["80–82","B-"],
+  ["77–79","C+"],["73–76","C"],["70–72","C-"],
+  ["67–69","D+"],["63–66","D"],["60–62","D-"],["0–59","F"]
+];
+
+let state = loadState();
+let inputMode = "letter";
+
+function defaultState(){
+  return {
+    gradingScale:"plusminus",
+    years:[
+      {name:"Freshman/9th Grade", courses:[
+        {name:"",grade:"",credit:"",type:"Regular/College Prep"},
+        {name:"",grade:"",credit:"",type:"Regular/College Prep"},
+        {name:"",grade:"",credit:"",type:"Regular/College Prep"},
+        {name:"",grade:"",credit:"",type:"Regular/College Prep"}
+      ]}
+    ]
+  };
+}
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return saved && saved.years ? saved : defaultState();
+  }catch(e){ return defaultState(); }
+}
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function gradeOptions(selected){
+  let html = '<option value="">Select</option>';
+  Object.keys(grades).forEach(g => html += `<option ${g===selected?'selected':''}>${g}</option>`);
+  return html;
+}
+function typeOptions(selected){
+  return ["Regular/College Prep","Honors","AP / IB"].map(t =>
+    `<option ${t===selected?'selected':''}>${t}</option>`).join("");
+}
+function render(){
+  const wrap = document.getElementById("years");
+  wrap.innerHTML = "";
+  state.years.forEach((year, yi) => {
+    const card = document.createElement("div");
+    card.className = "card courses-card";
+    card.innerHTML = `
+      <div class="year-head">
+        <select class="year-select" data-year="${yi}" aria-label="School year">
+          ${["Freshman/9th Grade","Sophomore/10th Grade","Junior/11th Grade","Senior/12th Grade","Other"].map(y =>
+            `<option ${y===year.name?'selected':''}>${esc(y)}</option>`).join("")}
+        </select>
+        <button class="icon-btn" title="Remove year" data-remove-year="${yi}">×</button>
+      </div>
+      <div class="grid-head">
+        <div>Course Name</div><div>Grade</div><div>Credit</div><div>Course Type</div><div></div>
+      </div>
+      <div class="course-list">
+        ${year.courses.length ? year.courses.map((c,ci)=>`
+          <div class="course-row">
+            <input data-year="${yi}" data-course="${ci}" data-field="name" placeholder="eg. U.S. History" value="${esc(c.name)}">
+            ${inputMode==="letter"
+              ? `<select data-year="${yi}" data-course="${ci}" data-field="grade">${gradeOptions(c.grade)}</select>`
+              : `<select data-year="${yi}" data-course="${ci}" data-field="grade">${percentageGrades.map(([p,g]) =>
+                  `<option value="${g}" ${g===c.grade?'selected':''}>${p} (${g})</option>`).join("")}</select>`
+            }
+            <select data-year="${yi}" data-course="${ci}" data-field="credit">
+              <option value="">Credit</option>
+              ${["0.25","0.5","1","1.5","2","3","4"].map(v=>`<option value="${v}" ${String(c.credit)===v?'selected':''}>${v}</option>`).join("")}
+            </select>
+            <select data-year="${yi}" data-course="${ci}" data-field="type">${typeOptions(c.type)}</select>
+            <button class="remove" title="Remove course" data-remove-course="${yi}:${ci}">×</button>
+          </div>`).join("") : `<div class="empty">No courses yet.</div>`}
+      </div>
+      <div class="year-total">
+        <strong>Year Total</strong>
+        <span>Credit: <b>${yearCredits(year).toFixed(2)}</b></span>
+        <span>Weighted: <b>${yearGpa(year,true).toFixed(2)}</b></span>
+        <span>Unweighted: <b>${yearGpa(year,false).toFixed(2)}</b></span>
+      </div>
+      <button class="btn" data-add-course="${yi}">＋ Add Course</button>
+    `;
+    wrap.appendChild(card);
+  });
+  updateSummary();
+}
+function yearCredits(year){
+  return year.courses.reduce((sum,c)=>sum+(parseFloat(c.credit)||0),0);
+}
+function points(c, weighted){
+  if(!c.grade) return 0;
+  let p = grades[c.grade] ?? 0;
+  if(weighted){
+    if(c.type==="Honors") p += 0.5;
+    if(c.type==="AP / IB") p += 1;
+  }
+  return Math.min(p,5);
+}
+function yearGpa(year, weighted){
+  let total=0, credits=0;
+  year.courses.forEach(c=>{
+    const cr=parseFloat(c.credit)||0;
+    if(c.grade && cr>0){ total += points(c,weighted)*cr; credits += cr; }
+  });
+  return credits ? total/credits : 0;
+}
+function cumulative(weighted){
+  let total=0, credits=0;
+  state.years.forEach(y=>y.courses.forEach(c=>{
+    const cr=parseFloat(c.credit)||0;
+    if(c.grade && cr>0){ total += points(c,weighted)*cr; credits += cr; }
+  }));
+  return {gpa:credits ? total/credits : 0, credits};
+}
+function updateSummary(){
+  const w=cumulative(true), u=cumulative(false);
+  document.getElementById("weightedGpa").textContent=w.gpa.toFixed(2);
+  document.getElementById("unweightedGpa").textContent=u.gpa.toFixed(2);
+  document.getElementById("totalCredits").textContent=w.credits.toFixed(2);
+}
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(!el.dataset.field) return;
+  const y=+el.dataset.year, c=+el.dataset.course;
+  state.years[y].courses[c][el.dataset.field]=el.value;
+  save();
+  render();
+});
+document.addEventListener("change", e=>{
+  const el=e.target;
+  if(el.id==="gradingScale"){state.gradingScale=el.value;save();return;}
+  if(el.classList.contains("year-select")){
+    state.years[+el.dataset.year].name=el.value;save();render();return;
+  }
+  if(!el.dataset.field) return;
+  const y=+el.dataset.year, c=+el.dataset.course;
+  state.years[y].courses[c][el.dataset.field]=el.value;
+  save();render();
+});
+document.addEventListener("click", e=>{
+  const el=e.target;
+  if(el.matches("[data-add-course]")){
+    const y=+el.dataset.addCourse;
+    state.years[y].courses.push({name:"",grade:"",credit:"",type:"Regular/College Prep"});
+    save();render();return;
+  }
+  if(el.matches("[data-remove-course]")){
+    const [y,c]=el.dataset.removeCourse.split(":").map(Number);
+    state.years[y].courses.splice(c,1);
+    save();render();return;
+  }
+  if(el.matches("[data-remove-year]")){
+    const y=+el.dataset.removeYear;
+    if(state.years.length===1){alert("Keep at least one school year.");return;}
+    state.years.splice(y,1);save();render();return;
+  }
+  if(el.id==="addYear"){
+    state.years.push({name:"Other",courses:[
+      {name:"",grade:"",credit:"",type:"Regular/College Prep"}
+    ]});
+    save();render();return;
+  }
+  if(el.id==="reset"){
+    if(confirm("Reset all courses and GPA data?")){
+      state=defaultState();inputMode="letter";save();render();
+    }
+  }
+  if(el.dataset.mode){
+    inputMode=el.dataset.mode;
+    document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("active",b===el));
+    render();
+    document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("active",b.dataset.mode===inputMode));
+  }
+});
+document.getElementById("yearNow").textContent=new Date().getFullYear();
+document.getElementById("gradingScale").value=state.gradingScale;
+render();
+document.getElementById("gradingScale").value=state.gradingScale;
+
+</script>
+</body>
+</html>
