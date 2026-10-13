@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <!-- ═══════════════════════════════════════════════════════════════════════
-     Moving Box Calculator (single-file edition)
+     BoxTally — Moving Box Calculator (single-file edition)
      ───────────────────────────────────────────────────────────────────────
      HOW TO EDIT THIS FILE
        · All prices, box data, allocations & presets live in the CONFIG
@@ -16,20 +16,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BoxTally — Precision Moving Box Calculator &amp; Packing Manifest</title>
-  <meta name="description" content="Count every box before you tape the first one. Estimate small, medium, large, XL, wardrobe, dish-pack, picture and TV boxes — plus tape, paper, weight, volume and truck size — with a room-by-room model. Free, single-file, printable packing manifest.">
+  <title>Moving Box Calculator — Free & Instant, No Signup Required</title>
+  <meta name="description" content="Free moving box calculator: find out exactly how many moving boxes you need in 10 seconds. Counts for every box size, packing supplies, weight and truck size. No signup, no credit card — just print your packing list.">
+  <meta name="keywords" content="moving box calculator, how many moving boxes do I need, packing calculator, moving supplies calculator, free box calculator">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://movingboxcalculator.online/">
   <meta name="theme-color" content="#f3ede0">
-  <meta property="og:title" content="BoxTally — Precision Moving Box Calculator">
-  <meta property="og:description" content="A freight-grade estimate of boxes, supplies, weight, volume and truck size for your move.">
+  <meta property="og:title" content="Moving Box Calculator — Free & Instant, No Signup">
+  <meta property="og:description" content="How many moving boxes do you need? Exact counts for every box size, supplies, weight and truck fit — free, no signup, no credit card.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://movingboxcalculator.online/">
+  <meta property="og:site_name" content="MovingBoxCalculator.online">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Moving Box Calculator — Free & Instant, No Signup">
+  <meta name="twitter:description" content="Exact box counts, supplies and truck size for your move. Free forever — no signup, no credit card.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Structured data: keep in sync with the FAQ section below -->
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebApplication","name":"BoxTally","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","description":"Precision moving box calculator: estimates eight box classes plus supplies, weight, volume and truck size from a room-by-room model.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  {"@context":"https://schema.org","@type":"WebApplication","name":"Moving Box Calculator","alternateName":"BoxTally","url":"https://movingboxcalculator.online/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","description":"Free moving box calculator: estimates how many moving boxes you need — eight box classes plus supplies, weight, volume and truck size. No signup or credit card required.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
   </script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"HowTo","name":"How to calculate how many moving boxes you need","totalTime":"PT3M","step":[
@@ -46,7 +54,7 @@
    {"@type":"Question","name":"Does the total volume include my furniture?","acceptedAnswer":{"@type":"Answer","text":"No. The cubic-footage figure is boxes only — furniture, mattresses and appliances add their own volume, so the truck recommendation assumes boxes fill roughly 60–70% of the suggested vehicle."}},
    {"@type":"Question","name":"What is a dish pack and why is it separate?","acceptedAnswer":{"@type":"Answer","text":"A dish pack is a double-walled 5.2 cu ft box rated for 75 lbs, holding roughly one 8-piece place setting with glassware. Fragile kitchenware should never ride in a general-purpose carton."}},
    {"@type":"Question","name":"How is the cost range calculated?","acceptedAnswer":{"@type":"Answer","text":"Every box class is priced at current U.S. big-box retail, supplies are added, and the total is framed with a −15%/+25% band for second-hand versus premium kits."}},
-   {"@type":"Question","name":"How do I share my estimate?","acceptedAnswer":{"@type":"Answer","text":"Tap Share link in the manifest panel. Your exact configuration is encoded into the page URL — no account, no server — so anyone opening the link sees the calculator pre-loaded with your numbers."}}]}
+   {"@type":"Question","name":"Is it really free? Do I need to sign up?","acceptedAnswer":{"@type":"Answer","text":"Really free — no signup, no email, no credit card. Run unlimited estimates, share your configuration via an encoded URL, or print your box list. The page remembers your draft between visits."}}]}
   </script>
 
   <style>
@@ -58,7 +66,7 @@
     --ink:#1d1810; --ink-2:#6b5f4c; --line:#c9bda3;
     --boxc:#b98548; --accent:#e4470f; --accent-2:#b33507; --mint:#4f6f52;
     --fd:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
-    --fs:'Instrument Serif',Georgia,serif;
+    --fs:Georgia,'Times New Roman',serif;  /* system serif — zero font download */
     --fm:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
     --shadow:4px 4px 0 0 rgba(29,24,16,.9);
     --shadow-sm:2.5px 2.5px 0 0 rgba(29,24,16,.9);
@@ -128,6 +136,8 @@
   .hero-stats div:first-child{border-left:0;padding-left:0}
   .hero-stats b{display:block;font-size:26px}
   .hero-stats small{display:block;margin-top:4px;font-family:var(--fm);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+  .trust{display:flex;flex-wrap:wrap;gap:6px 18px;list-style:none;padding:0;margin:20px 0 0;font-family:var(--fm);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+  .trust li::before{content:"✓";color:var(--accent);font-weight:700;margin-right:6px}
 
   /* box scene (SVG injected by script via data-iso) */
   .scene{position:relative;height:430px;max-width:480px;margin-inline:auto;width:100%}
@@ -425,8 +435,8 @@
   <!-- ═══ SECTION: TICKER ═══ -->
   <div class="ticker no-print" role="marquee" aria-label="Packing facts">
     <div class="ticker-track">
-      <span>1 wardrobe box = 2 linear ft of closet ✶ Books cap at 65 lb per box ✶ Dish packs are double-walled for a reason ✶ Tape seals ±9 boxes per roll ✶ Label two sides, never the top flap ✶ Households gain ~3% more stuff per year ✶</span>
-      <span aria-hidden="true">1 wardrobe box = 2 linear ft of closet ✶ Books cap at 65 lb per box ✶ Dish packs are double-walled for a reason ✶ Tape seals ±9 boxes per roll ✶ Label two sides, never the top flap ✶ Households gain ~3% more stuff per year ✶</span>
+      <span>Free moving box calculator ✶ No signup ✶ No credit card ✶ Results in 10 seconds ✶ 1 wardrobe box = 2 linear ft of closet ✶ Books cap at 65 lb per box ✶ Tape seals ±9 boxes per roll ✶</span>
+      <span aria-hidden="true">Free moving box calculator ✶ No signup ✶ No credit card ✶ Results in 10 seconds ✶ 1 wardrobe box = 2 linear ft of closet ✶ Books cap at 65 lb per box ✶ Tape seals ±9 boxes per roll ✶</span>
     </div>
   </div>
 
@@ -436,7 +446,7 @@
       <a class="brand" href="#top">
         <span class="mark" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg></span>
         BoxTally<span style="color:var(--accent)">™</span>
-        <small>Freight-grade estimator</small>
+        <small>movingboxcalculator.online · free, no signup</small>
       </a>
       <nav class="nav" aria-label="Primary">
         <a href="#estimate">Estimate</a><a href="#guide">Box guide</a><a href="#method">Method</a><a href="#timeline">Timeline</a><a href="#faq">FAQ</a>
@@ -450,19 +460,20 @@
     <section class="hero no-print" aria-labelledby="hero-title">
       <div class="wrap">
         <div>
-          <p class="tag"><i aria-hidden="true"></i>Precision packing manifest — est. 2026</p>
-          <h1 id="hero-title">How many <span style="color:var(--accent)">boxes</span><br>
-          does <em>your</em> life<br>
-          fit <span class="outline">into?</span></h1>
-          <p class="lede">Most calculators count bedrooms and stop. BoxTally runs a <strong>room-by-room freight model</strong> — square footage, occupants, lifestyle density, years lived, closet feet, bookshelves, china sets and screens — and returns a complete manifest: eight box classes, supplies, weight, volume and the truck that actually fits.</p>
+          <p class="tag"><i aria-hidden="true"></i>Free forever · no signup · no credit card required</p>
+          <h1 id="hero-title">Moving Box<br><span style="color:var(--accent)">Calculator</span></h1>
+          <p class="lede">Wondering <em>how many moving boxes you need?</em> You are 10 seconds from the answer. Tell us about your home and this free moving box calculator gives you an exact count for every box size — plus packing supplies, total weight, and the truck that fits. No account, no email, nothing to install.</p>
           <div class="hero-actions">
-            <a class="btn btn-a" href="#estimate">Run my estimate ↓</a>
-            <a class="btn btn-g" href="#guide">Browse box guide</a>
+            <a class="btn btn-a" href="#estimate">Calculate my boxes ↓</a>
+            <a class="btn btn-g" href="#guide">See the box sizes</a>
           </div>
+          <ul class="trust">
+            <li>100% free</li><li>No signup or email</li><li>No credit card</li><li>Print your list</li>
+          </ul>
           <dl class="hero-stats">
-            <div><b>8</b><small>box classes modeled</small></div>
-            <div><b>12-pt</b><small>room &amp; density model</small></div>
-            <div><b>1 tap</b><small>to copy or print plan</small></div>
+            <div><b>8</b><small>box sizes counted</small></div>
+            <div><b>10s</b><small>to get your estimate</small></div>
+            <div><b>$0</b><small>forever — no catch</small></div>
           </dl>
         </div>
 
@@ -493,9 +504,9 @@
     <section class="calc scroll-mt" id="estimate" aria-labelledby="estimate-title">
       <div class="wrap">
         <header class="no-print">
-          <p class="kicker">Step 01 — Interrogate the move</p>
-          <h2 class="h2" id="estimate-title">Build your <em>manifest</em></h2>
-          <p class="sub">Every dial below feeds a live freight model. Nothing is hidden — the right-hand manifest recalculates on each keystroke, and the formula is published in full in the <a href="#method" style="font-weight:600;text-decoration-color:var(--accent);text-decoration-thickness:2px">method section</a>.</p>
+          <p class="kicker">Step 1 of 2 — Tell us about your home</p>
+          <h2 class="h2" id="estimate-title">How many <em>moving boxes</em> do you need?</h2>
+          <p class="sub">Use the dials on the left — or tap a preset — and your answer appears instantly on the right. No waiting, no page reloads. Then copy, share or print your list and take it to the store. Works on any phone or computer.</p>
         </header>
 
         <p id="shared-note" class="manifest-share no-print" style="display:none;margin-top:24px;border:2px solid var(--accent);background:var(--card);padding:8px 12px;font-family:var(--fm);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2);box-shadow:2.5px 2.5px 0 0 var(--accent);max-width:max-content">
@@ -642,9 +653,10 @@
           </form>
 
           <!-- ── RESULTS MANIFEST ── -->
-          <aside class="manifest print-page" aria-label="Calculated packing manifest">
+          <aside class="manifest print-page" aria-label="Your box count and packing list">
             <div class="manifest-head">
-              <b>Packing manifest</b>
+              <b>Your box list</b>
+              <p style="font-family:var(--fm);font-size:9px;letter-spacing:.18em;color:rgba(243,237,224,.55);text-transform:uppercase">Step 2 of 2 results</p>
               <span style="display:flex;align-items:center;gap:12px"><span class="barcode" aria-hidden="true"></span><small>№ <span id="r-no">BT-000000</span></small></span>
             </div>
             <div class="manifest-body">
@@ -719,9 +731,9 @@
     <section class="sec-alt scroll-mt no-print" id="guide" aria-labelledby="guide-title">
       <div class="wrap sec-pad">
         <header>
-          <p class="kicker">Step 02 — Know your containers</p>
-          <h2 class="h2" id="guide-title">The eight <em>box classes</em></h2>
-          <p class="sub">Every class exists because something breaks, bends or bursts in the wrong container. The calculator assigns each item group to its correct vessel — here is the full freight table.</p>
+          <p class="kicker">Handy reference — The 8 box sizes</p>
+          <h2 class="h2" id="guide-title">Every box, <em>explained</em></h2>
+          <p class="sub">Each box size exists because something breaks, bends or bursts in the wrong container. The calculator always assigns your things to the right one — here is the full guide with dimensions, weight limits and prices.</p>
         </header>
         <ul class="guide-grid" id="guide-cards" role="list"></ul>
         <div class="spec-wrap">
@@ -738,9 +750,9 @@
     <section class="scroll-mt no-print" id="method" aria-labelledby="method-title">
       <div class="wrap sec-pad method-grid">
         <div>
-          <p class="kicker">Step 03 — Auditable math</p>
-          <h2 class="h2" id="method-title">Open<em> the formula</em></h2>
-          <p class="sub">No black boxes — only the cardboard kind. Every figure your manifest produces can be traced to one of five documented stages.</p>
+          <p class="kicker">Behind the numbers — nothing hidden</p>
+          <h2 class="h2" id="method-title">How the <em>calculator</em> works</h2>
+          <p class="sub">No black boxes — only the cardboard kind. Every figure your box list produces can be traced to one of five simple, documented stages, based on professional mover benchmarks.</p>
           <ol class="steps">
             <li><span class="sn" aria-hidden="true">1</span><h3>Footage baseline</h3><p>Shared space — living rooms, hall closets, decor — scales with square footage: per 100 sq ft we allocate 0.35 book boxes, 0.70 medium, 0.32 large and 0.18 XL. A living room is mostly volume, not count, so larger homes add bulk (L/XL) faster than count (S).</p></li>
             <li><span class="sn" aria-hidden="true">2</span><h3>Room crate loads</h3><p>Kitchens, bedrooms, bathrooms and each additional occupant contribute fixed allocations drawn from mover benchmarks: a bedroom is 2.5S/4M/1.5L/1XL, a bathroom 1.5S/1M, the kitchen 5S/6M/2L. Optional spaces — office, garage, shed — append their own loads.</p></li>
@@ -779,9 +791,9 @@ total       = ceil( (general + special) * (1+buffer) )</pre>
     <!-- ═══ SECTION: TIMELINE ═══ -->
     <section class="sec-dark scroll-mt no-print" id="timeline" aria-labelledby="timeline-title">
       <div class="wrap sec-pad">
-        <p class="kicker">Step 04 — Sequence the chaos</p>
+        <p class="kicker">Your game plan — week by week</p>
         <h2 class="h2" id="timeline-title">The 4-week <em>packing countdown</em></h2>
-        <p class="sub">Boxes are useless in the wrong order. Run your manifest four weeks out, then pack from coldest storage to warmest — the kettle boxes come last for a reason.</p>
+        <p class="sub">Boxes are useless in the wrong order. Run the calculator four weeks before moving day, then pack from the rooms you use least to the ones you use most — the kettle boxes come last for a reason.</p>
         <ol class="tl">
           <li><p class="wk">T−4</p><p class="wk-sub">weeks to haul-day</p><h3>Audit &amp; acquire</h3><p class="body">Run the tally, order the full manifest, and start purging. Every box you own should already have a destination room.</p>
             <ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18"/><path d="M8 12l3 3 5-6"/></svg>Order boxes, tape, paper in one delivery</li>
@@ -808,9 +820,9 @@ total       = ceil( (general + special) * (1+buffer) )</pre>
     <section class="scroll-mt no-print" id="faq" aria-labelledby="faq-title">
       <div class="wrap sec-pad faq-grid">
         <div>
-          <p class="kicker">Step 05 — Clear customs</p>
-          <h2 class="h2" id="faq-title">Questions, <em>stamped &amp; answered</em></h2>
-          <p class="sub">The doubts every mover has the night before the tape runs out.</p>
+          <p class="kicker">Good to know — quick answers</p>
+          <h2 class="h2" id="faq-title">Frequently asked <em>questions</em></h2>
+          <p class="sub">Everything people ask before trusting a moving box calculator with their tape budget.</p>
           <div class="faq-aside">
             <b>Still unsure?</b>
             <p>The fastest way to validate the estimate is to pack one room and compare counts — the model predicts roughly 2 book boxes, 4 medium, 1 large and 1 XL per bedroom before density factors.</p>
@@ -823,7 +835,7 @@ total       = ceil( (general + special) * (1+buffer) )</pre>
           <details><summary><span class="qn">03</span><span class="qt">Does the total volume include my furniture?</span><span class="qx" aria-hidden="true">+</span></summary><div class="qa">No. The cubic-footage figure is boxes only — the part you can actually count. Furniture, mattresses and appliances add their own volume, which is why the truck recommendation assumes the boxes fill roughly 60–70% of the suggested vehicle when you load sensibly.</div></details>
           <details><summary><span class="qn">04</span><span class="qt">What is a dish pack and why is it separate?</span><span class="qx" aria-hidden="true">+</span></summary><div class="qa">A dish pack (or china barrel) is a double-walled 5.2 cu ft box rated for 75 lbs. Each one holds roughly one 8-piece place setting with glassware, so we generate one per place setting you declare — fragile kitchenware should never ride in a general-purpose carton.</div></details>
           <details><summary><span class="qn">05</span><span class="qt">How is the cost range calculated?</span><span class="qx" aria-hidden="true">+</span></summary><div class="qa">We price every box class at current U.S. big-box retail, add the full supplies manifest (tape, paper, bubble wrap, pads, labels), then frame it with a ±15–25% band. Buying second-hand cartons or renting crates lands you near the low end; premium moving-store kits near the high end.</div></details>
-          <details><summary><span class="qn">06</span><span class="qt">How do I share my estimate?</span><span class="qx" aria-hidden="true">+</span></summary><div class="qa">Tap Share link in the manifest panel. Your exact configuration is encoded into the page URL (no account, no server), so anyone who opens the link sees the calculator pre-loaded with your numbers. The page also remembers your draft between visits on the same device.</div></details>
+          <details><summary><span class="qn">06</span><span class="qt">Is it really free? Do I need to sign up?</span><span class="qx" aria-hidden="true">+</span></summary><div class="qa">Really free — no signup, no email, no credit card, no trial that expires. Run as many estimates as you like. Tap Share link to send your exact configuration to anyone (it is encoded in the page URL, so there is no account involved), or print your box list and take it shopping. The page also remembers your draft between visits on the same device.</div></details>
           <details><summary><span class="qn">07</span><span class="qt">What if I have already packed some rooms?</span><span class="qx" aria-hidden="true">+</span></summary><div class="qa">Drop the overpack buffer to 0% and dial the room counts down with the steppers — bedrooms, shelves and closets all accept zero. The room-by-room breakdown shows exactly where every box is expected to come from, so you can compare against what is already taped.</div></details>
         </div>
       </div>
@@ -838,13 +850,13 @@ total       = ceil( (general + special) * (1+buffer) )</pre>
           <span class="mark" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg></span>
           BoxTally<span style="color:var(--accent)">™</span>
         </a>
-        <p>A freight-inspector-grade moving box calculator. Built on transparent heuristics and semantic HTML — because your move deserves better than a bedroom count. Single-file edition: copy, host, edit.</p>
+        <p>The free <strong>moving box calculator</strong> at movingboxcalculator.online — know exactly how many moving boxes you need, get your supplies list and truck size in seconds. No signup, no credit card, ever. Single-file edition: copy, host, edit.</p>
       </div>
       <nav aria-label="Footer tool"><h2>Tool</h2><ul><li><a href="#estimate">Run an estimate</a></li><li><a href="#method">Methodology</a></li><li><a href="#timeline">Packing timeline</a></li></ul></nav>
       <nav aria-label="Footer reference"><h2>Reference</h2><ul><li><a href="#guide">Box guide</a></li><li><a href="#faq">FAQ</a></li></ul></nav>
       <div><h2>Manifest</h2><p class="foot-mono">FORM BT-2026<br>REV 04 · SEMANTIC<br>SINGLE-FILE BUILD</p></div>
     </div>
-    <div class="wrap foot-base"><p>© 2026 BoxTally Freight Co. — Count first, tape second.</p><p>Heuristic estimates · verify load limits with your carrier</p></div>
+    <div class="wrap foot-base"><p>© 2026 MovingBoxCalculator.online — Count first, tape second.</p><p>Heuristic estimates · verify load limits with your carrier</p></div>
   </footer>
 
   <script>
