@@ -1,0 +1,283 @@
+<div id="moving-box-calculator">
+  <style>
+    #moving-box-calculator {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f8fafc;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      color: #1e293b;
+    }
+    #moving-box-calculator h2 {
+      text-align: center;
+      color: #1e40af;
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    #moving-box-calculator .subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 28px;
+      font-size: 16px;
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .input-group label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #334155;
+    }
+    .input-group input {
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .calc-btn {
+      flex: 1;
+      min-width: 160px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .calc-btn:hover { background: #1d4ed8; }
+    .reset-btn {
+      background: #64748b;
+    }
+    .reset-btn:hover { background: #475569; }
+    .print-btn {
+      background: #0f766e;
+    }
+    .print-btn:hover { background: #0d9488; }
+    .results {
+      display: none;
+      margin-top: 32px;
+      animation: fadeIn 0.4s ease;
+    }
+    .results.show { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .results h3 {
+      margin: 0 0 16px;
+      color: #1e40af;
+    }
+    .box-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .box-card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-left: 5px solid #f97316;
+    }
+    .box-card .qty {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1e40af;
+      line-height: 1;
+    }
+    .box-card .name {
+      font-weight: 700;
+      margin: 6px 0 4px;
+      font-size: 16px;
+    }
+    .box-card .desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .totals {
+      margin-top: 24px;
+      padding: 16px;
+      background: #eff6ff;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .disclaimer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+      font-style: italic;
+    }
+    @media print {
+      .form-section, .btn-row { display: none !important; }
+      #moving-box-calculator { box-shadow: none; background: white; }
+    }
+  </style>
+
+  <div class="form-section">
+    <h2>📦 Advanced Moving Box Calculator</h2>
+    <p class="subtitle">Enter your rooms and extra items to get a realistic box estimate.</p>
+
+    <div class="calc-grid">
+      <div class="input-group">
+        <label for="bedrooms">Bedrooms</label>
+        <input type="number" id="bedrooms" min="0" max="20" value="0">
+      </div>
+      <div class="input-group">
+        <label for="bathrooms">Bathrooms</label>
+        <input type="number" id="bathrooms" min="0" max="10" value="0">
+      </div>
+      <div class="input-group">
+        <label for="living">Living / Family Rooms</label>
+        <input type="number" id="living" min="0" max="10" value="0">
+      </div>
+      <div class="input-group">
+        <label for="kitchens">Kitchens</label>
+        <input type="number" id="kitchens" min="0" max="3" value="0">
+      </div>
+      <div class="input-group">
+        <label for="dining">Dining Rooms</label>
+        <input type="number" id="dining" min="0" max="5" value="0">
+      </div>
+      <div class="input-group">
+        <label for="offices">Home Offices / Studies</label>
+        <input type="number" id="offices" min="0" max="8" value="0">
+      </div>
+      <div class="input-group">
+        <label for="garages">Garages / Basements / Storage</label>
+        <input type="number" id="garages" min="0" max="5" value="0">
+      </div>
+      <div class="input-group">
+        <label for="attics">Attics</label>
+        <input type="number" id="attics" min="0" max="3" value="0">
+      </div>
+      <div class="input-group">
+        <label for="books">Bookcases / Lots of books & media</label>
+        <input type="number" id="books" min="0" max="20" value="0">
+      </div>
+      <div class="input-group">
+        <label for="electronics">TVs / Computers / Electronics</label>
+        <input type="number" id="electronics" min="0" max="20" value="0">
+      </div>
+      <div class="input-group">
+        <label for="fragile">Fragile sets (china, glassware, etc.)</label>
+        <input type="number" id="fragile" min="0" max="10" value="0">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" class="calc-btn" onclick="calculateBoxes()">Calculate Boxes</button>
+      <button type="button" class="calc-btn reset-btn" onclick="resetCalc()">Reset</button>
+      <button type="button" class="calc-btn print-btn" onclick="window.print()">Print Results</button>
+    </div>
+  </div>
+
+  <div id="results" class="results">
+    <h3>Recommended Boxes</h3>
+    <div class="box-grid" id="box-grid"></div>
+    <div class="totals" id="totals"></div>
+    <p class="disclaimer">These are estimates based on typical household contents. Actual needs vary depending on how much you own and how you pack. Always buy a few extra boxes.</p>
+  </div>
+
+  <script>
+    function getVal(id) {
+      return parseInt(document.getElementById(id).value) || 0;
+    }
+
+    function calculateBoxes() {
+      const bedrooms = getVal('bedrooms');
+      const bathrooms = getVal('bathrooms');
+      const living = getVal('living');
+      const kitchens = getVal('kitchens');
+      const dining = getVal('dining');
+      const offices = getVal('offices');
+      const garages = getVal('garages');
+      const attics = getVal('attics');
+      const books = getVal('books');
+      const electronics = getVal('electronics');
+      const fragile = getVal('fragile');
+
+      if (bedrooms + bathrooms + living + kitchens + dining + offices + garages + attics + books + electronics + fragile === 0) {
+        alert('Please enter at least one room or item.');
+        return;
+      }
+
+      let small = bedrooms*5 + bathrooms*2 + kitchens*6 + offices*10 + garages*4 + attics*3 + books*8 + electronics*2 + fragile*4;
+      let medium = bedrooms*8 + bathrooms*3 + living*5 + kitchens*10 + dining*4 + offices*3 + garages*6 + attics*4 + electronics*3;
+      let large = bedrooms*3 + living*6 + kitchens*3 + dining*3 + garages*8 + attics*5 + electronics*1;
+      let xl = bedrooms*2 + living*3 + kitchens*1 + attics*2;
+      let wardrobe = Math.ceil(bedrooms * 1.4);
+      let dish = kitchens*3 + dining*2 + fragile*3;
+
+      small = Math.max(0, Math.round(small));
+      medium = Math.max(0, Math.round(medium));
+      large = Math.max(0, Math.round(large));
+      xl = Math.max(0, Math.round(xl));
+      wardrobe = Math.max(0, wardrobe);
+      dish = Math.max(0, Math.round(dish));
+
+      const boxes = [
+        { qty: small, name: 'Small Boxes (1.5 cu ft)', desc: 'Books, tools, canned goods, heavy items. Don’t overload.' },
+        { qty: medium, name: 'Medium Boxes (3.0 cu ft)', desc: 'Clothes, kitchenware, toys, linens, most household items.' },
+        { qty: large, name: 'Large Boxes (4.5 cu ft)', desc: 'Lampshades, pillows, bulky but lightweight items.' },
+        { qty: xl, name: 'Extra-Large Boxes (6.0 cu ft)', desc: 'Comforters, large pillows, lightweight bulky items.' },
+        { qty: wardrobe, name: 'Wardrobe Boxes', desc: 'Hanging clothes. Keeps garments wrinkle-free.' },
+        { qty: dish, name: 'Dish Pack / China Boxes', desc: 'Fragile dishes, glasses, china. Extra padding recommended.' }
+      ];
+
+      const grid = document.getElementById('box-grid');
+      grid.innerHTML = '';
+      let total = 0;
+      boxes.forEach(b => {
+        if (b.qty > 0) {
+          total += b.qty;
+          grid.innerHTML += `
+            <div class="box-card">
+              <div class="qty">${b.qty}</div>
+              <div class="name">${b.name}</div>
+              <div class="desc">${b.desc}</div>
+            </div>`;
+        }
+      });
+
+      document.getElementById('totals').innerHTML = `Total estimated boxes: <strong>${total}</strong>`;
+      document.getElementById('results').classList.add('show');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetCalc() {
+      ['bedrooms','bathrooms','living','kitchens','dining','offices','garages','attics','books','electronics','fragile'].forEach(id => {
+        document.getElementById(id).value = 0;
+      });
+      document.getElementById('results').classList.remove('show');
+    }
+  </script>
+</div>
